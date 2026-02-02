@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>NVR Grid v{{VERSION}}</title>
+    <style>
+        body { 
+            margin: 0; background: #000; color: #fff; font-family: sans-serif; 
+            display: flex; flex-wrap: wrap; height: 100vh; width: 100vw; 
+            overflow: hidden; padding: 10px; box-sizing: border-box;
+        }
+        .cam-box { 
+            flex: 1 0 30%; height: 45vh; position: relative; 
+            margin: 5px; border: 3px solid #1a1a1a; box-sizing: border-box; 
+            background: #111; outline: none; transition: transform 0.1s;
+            border-radius: 6px; overflow: hidden;
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+        }
+        .cam-box:focus { border-color: #f1c40f; transform: scale(1.03); z-index: 100; }
+        .lbl { 
+            position: absolute; bottom: 10px; left: 10px; z-index: 20; 
+            background: rgba(0,0,0,0.8); padding: 5px 12px; 
+            font-size: 14px; border-radius: 4px; border: 1px solid #333;
+            pointer-events: none; 
+        }
+        video-stream { width: 100%; height: 100%; display: block; pointer-events: none; }
+        @media (max-width: 600px) { .cam-box { flex: 1 0 45%; height: 32vh; } }
+    </style>
+</head>
+<body>
+    <script type="module" src="./video-stream.js"></script>
+    <script>
+        window.NVR_DATA = [];
+        function toggle(el) {
+            const video = el.querySelector('video-stream').shadowRoot?.querySelector('video') || el.querySelector('video');
+            if (video && !!video.webkitEnterFullscreen && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
+                video.webkitEnterFullscreen(); return;
+            }
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (el.requestFullscreen) el.requestFullscreen();
+                else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+        }
+        document.addEventListener('keydown', (e) => {
+            const active = document.activeElement;
+            if (!active || !active.classList.contains('cam-box')) return;
+            const boxes = Array.from(document.querySelectorAll('.cam-box'));
+            const idx = boxes.indexOf(active);
+            let next = idx;
+            const cols = window.innerWidth > 600 ? 3 : 2;
+            if (e.key === 'ArrowRight') next = idx + 1;
+            if (e.key === 'ArrowLeft') next = idx - 1;
+            if (e.key === 'ArrowDown') next = idx + cols;
+            if (e.key === 'ArrowUp') next = idx - cols;
+            if (boxes[next]) { e.preventDefault(); boxes[next].focus(); }
+        });
+        window.onload = () => {
+            const host = window.location.hostname;
+            window.NVR_DATA.forEach((cam, i) => {
+                const box = document.createElement('div');
+                box.className = 'cam-box'; box.tabIndex = i + 1;
+                box.innerHTML = `<div class="lbl">${cam.name}</div>`;
+                const s = document.createElement('video-stream');
+                s.setAttribute('playsinline', '');
+                s.mode = "webrtc,mse";
+                s.src = `ws://${host}:1984/api/ws?src=${encodeURIComponent(cam.id)}`;
+                box.appendChild(s);
+                document.body.appendChild(box);
+                box.onclick = () => toggle(box);
+            });
+            if (window.NVR_DATA.length > 0) document.querySelector('.cam-box').focus();
+        };
+    </script>
+</body>
+</html>

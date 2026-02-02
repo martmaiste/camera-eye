@@ -1,0 +1,25 @@
+services:
+  go2rtc:
+    image: alexxit/go2rtc:latest
+    container_name: nvr-engine
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - ./config:/config
+    environment:
+      - TZ=Europe/Tallinn
+
+  eye-dashboard:
+    build:
+      context: .
+      network: host
+    container_name: eye-dashboard
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      - GO2RTC_API=${GO2RTC_API}
+      - ACCESS_TOKENS=${ACCESS_TOKENS}
+    volumes:
+      - ./config:/app/config
+    depends_on:
+      - go2rtc
