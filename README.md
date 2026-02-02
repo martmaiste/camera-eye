@@ -22,31 +22,34 @@ Paigaldamine
 
 Klooni repositoorium ja loo vajalikud failid:
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   # Loo koopia näidiskonfiguratsioonist  cp go2rtc.yaml.example go2rtc.yaml   `
+```bash
+# Loo koopia näidiskonfiguratsioonist
+cp go2rtc.yaml.example go2rtc.yaml
+```
 
 ### 2. Pääsukoodide (tokenite) loomine
 
 Kasuta kaasasolevat skripti, et genereerida turvalised koodid:
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   python3 generate_tokens.py   `
+```bash
+python3 generate_tokens.py   `
+```
 
 ### 3. Keskkonnamuutujate seadistamine
 
 Loo projekti juurkataloogi fail nimega .env ja lisa sinna oma andmed:
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   # .env faili sisu  ACCESS_TOKENS=sinu_genereeritud_kood1,kood2,kood3  GO2RTC_API=[http://127.0.0.1:1984/api/streams](http://127.0.0.1:1984/api/streams)   `
+```bash
+# .env faili sisu
+ACCESS_TOKENS=sinu_genereeritud_kood1,kood2,kood3
+GO2RTC_API=http://127.0.0.1:1984/api/streams
+```
 
 ### 4. Käivitus Dockeriga
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   docker compose up -d --build   `
+```bash
+docker compose up -d --build
+```
 
 Kasutamine
 ----------
