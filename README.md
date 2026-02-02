@@ -22,7 +22,7 @@ Paigaldamine
 
 Klooni repositoorium ja loo vajalikud failid:
 
-```bash
+``` bash
 # Loo koopia näidiskonfiguratsioonist
 cp go2rtc.yaml.example go2rtc.yaml
 ```
@@ -31,7 +31,7 @@ cp go2rtc.yaml.example go2rtc.yaml
 
 Kasuta kaasasolevat skripti, et genereerida turvalised koodid:
 
-```bash
+``` bash
 python3 generate_tokens.py   `
 ```
 
@@ -39,7 +39,7 @@ python3 generate_tokens.py   `
 
 Loo projekti juurkataloogi fail nimega .env ja lisa sinna oma andmed:
 
-```bash
+``` bash
 # .env faili sisu
 ACCESS_TOKENS=sinu_genereeritud_kood1,kood2,kood3
 GO2RTC_API=http://127.0.0.1:1984/api/streams
@@ -47,7 +47,7 @@ GO2RTC_API=http://127.0.0.1:1984/api/streams
 
 ### 4. Käivitus Dockeriga
 
-```bash
+``` bash
 docker compose up -d --build
 ```
 
