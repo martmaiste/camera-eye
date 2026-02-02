@@ -72,6 +72,7 @@ Projekti ülesehitus
 * **`www/index.html`**: Dünaamiline grid-liides (CSS/JS).
 * **`www/video-stream.js`**: Modifitseeritud go2rtc komponent.
 * **`generate_tokens.py`**: Abivahend turvaliste tokenite loomiseks.
+* **`probe_nvr.py`**: Abivahend seadistatud kaamefeedide resolutsioonide ja framerate kontrollimiseks.
 * **`docker-compose.yml`**: Stacki definitsioon (Eye + go2rtc).
     
 
