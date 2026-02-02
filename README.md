@@ -68,15 +68,11 @@ Pärast käivitamist on vaatepaneel kättesaadav järgmisel aadressil:http://:80
 Projekti ülesehitus
 -------------------
 
-*   app/main.py: Flask backend, mis tegeleb autoriseerimise ja go2rtc API-ga.
-    
-*   www/index.html: Dünaamiline grid-liides (CSS/JS).
-    
-*   www/video-stream.js: Modifitseeritud go2rtc komponent.
-    
-*   generate_tokens.py: Abivahend turvaliste tokenite loomiseks.
-    
-*   docker-compose.yml: Stacki definitsioon (Eye + go2rtc).
+* **`app/main.py`**: Flask backend, mis tegeleb autoriseerimise ja go2rtc API-ga.
+* **`www/index.html`**: Dünaamiline grid-liides (CSS/JS).
+* **`www/video-stream.js`**: Modifitseeritud go2rtc komponent.
+* **`generate_tokens.py`**: Abivahend turvaliste tokenite loomiseks.
+* **`docker-compose.yml`**: Stacki definitsioon (Eye + go2rtc).
     
 
 Autorid ja litsents
