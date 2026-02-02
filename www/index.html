@@ -7,7 +7,7 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>NVR Grid v{{VERSION}}</title>
+    <title>{{PROJECT_NAME}} v{{VERSION}}</title>
     <style>
         body { 
             margin: 0; background: #000; color: #fff; font-family: sans-serif; 
@@ -17,11 +17,16 @@
         .cam-box { 
             flex: 1 0 30%; height: 45vh; position: relative; 
             margin: 5px; border: 3px solid #1a1a1a; box-sizing: border-box; 
-            background: #111; outline: none; transition: transform 0.1s;
+            background: #111; outline: none; transition: transform 0.15s ease-out;
             border-radius: 6px; overflow: hidden;
             cursor: pointer; -webkit-tap-highlight-color: transparent;
         }
-        .cam-box:focus { border-color: #f1c40f; transform: scale(1.03); z-index: 100; }
+        .cam-box:focus { 
+            border-color: #f1c40f; 
+            transform: scale(1.03); 
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(241, 196, 15, 0.3);
+        }
         .lbl { 
             position: absolute; bottom: 10px; left: 10px; z-index: 20; 
             background: rgba(0,0,0,0.8); padding: 5px 12px; 
@@ -63,13 +68,12 @@
             if (boxes[next]) { e.preventDefault(); boxes[next].focus(); }
         });
         window.onload = () => {
-            // Tuvastame, kas oleme HTTPS või HTTP peal
             const isHttps = window.location.protocol === 'https:';
             const protocol = isHttps ? 'wss:' : 'ws:';
-            const host = window.location.host; // Võtab nii domeeni kui ka pordi (kui on)
+            const host = window.location.host;
             
-            // Kui oleme HTTPS (Nginxi taga), siis go2rtc API-le pordi 1984 kaudu enam ei pöörduta
-            // vaid minnakse läbi sama hosti /api/ws tee.
+            // Kui HTTPS, siis eeldame et Nginx vahendab /api/ws samas pordis (443)
+            // Kui HTTP, siis pöördume otse go2rtc pordi 1984 poole
             const wsBase = isHttps ? `${protocol}//${host}/api/ws` : `${protocol}//${window.location.hostname}:1984/api/ws`;
 
             window.NVR_DATA.forEach((cam, i) => {
@@ -79,10 +83,7 @@
                 const s = document.createElement('video-stream');
                 s.setAttribute('playsinline', '');
                 s.mode = "webrtc,mse";
-                
-                // Kasutame uut dünaamilist aadressi
                 s.src = `${wsBase}?src=${encodeURIComponent(cam.id)}`;
-                
                 box.appendChild(s);
                 document.body.appendChild(box);
                 box.onclick = () => {
