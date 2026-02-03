@@ -41,11 +41,17 @@
     <script type="module" src="./video-stream.js"></script>
     <script>
         window.NVR_DATA = [];
+        
         function toggle(el) {
+            if (!el) return;
             const video = el.querySelector('video-stream').shadowRoot?.querySelector('video') || el.querySelector('video');
+            
+            // iOS Safari tugi
             if (video && !!video.webkitEnterFullscreen && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
                 video.webkitEnterFullscreen(); return;
             }
+            
+            // Standardne täisekraan
             if (!document.fullscreenElement && !document.webkitFullscreenElement) {
                 if (el.requestFullscreen) el.requestFullscreen();
                 else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
@@ -54,43 +60,61 @@
                 else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
             }
         }
+
         document.addEventListener('keydown', (e) => {
             const active = document.activeElement;
             if (!active || !active.classList.contains('cam-box')) return;
+            
+            // ENTER või Remote OK nupu tugi
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                toggle(active);
+                return;
+            }
+
             const boxes = Array.from(document.querySelectorAll('.cam-box'));
             const idx = boxes.indexOf(active);
             let next = idx;
             const cols = window.innerWidth > 600 ? 3 : 2;
+            
             if (e.key === 'ArrowRight') next = idx + 1;
             if (e.key === 'ArrowLeft') next = idx - 1;
             if (e.key === 'ArrowDown') next = idx + cols;
             if (e.key === 'ArrowUp') next = idx - cols;
-            if (boxes[next]) { e.preventDefault(); boxes[next].focus(); }
+            
+            if (boxes[next]) { 
+                e.preventDefault(); 
+                boxes[next].focus(); 
+            }
         });
+
         window.onload = () => {
             const isHttps = window.location.protocol === 'https:';
             const protocol = isHttps ? 'wss:' : 'ws:';
             const host = window.location.host;
-            
-            // Kui HTTPS, siis eeldame et Nginx vahendab /api/ws samas pordis (443)
-            // Kui HTTP, siis pöördume otse go2rtc pordi 1984 poole
             const wsBase = isHttps ? `${protocol}//${host}/api/ws` : `${protocol}//${window.location.hostname}:1984/api/ws`;
 
             window.NVR_DATA.forEach((cam, i) => {
                 const box = document.createElement('div');
-                box.className = 'cam-box'; box.tabIndex = i + 1;
+                box.className = 'cam-box'; 
+                box.tabIndex = i + 1;
                 box.innerHTML = `<div class="lbl">${cam.name}</div>`;
+                
                 const s = document.createElement('video-stream');
                 s.setAttribute('playsinline', '');
                 s.mode = "webrtc,mse";
                 s.src = `${wsBase}?src=${encodeURIComponent(cam.id)}`;
+                
                 box.appendChild(s);
                 document.body.appendChild(box);
+                
                 box.onclick = () => {
                     box.focus();
                     toggle(box);
                 };
             });
+            
+            // Fookustame esimese kaamera, et pult kohe töötaks
             if (window.NVR_DATA.length > 0) document.querySelector('.cam-box').focus();
         };
     </script>
