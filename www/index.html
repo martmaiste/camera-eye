@@ -41,17 +41,12 @@
     <script type="module" src="./video-stream.js"></script>
     <script>
         window.NVR_DATA = [];
-        
+
         function toggle(el) {
-            if (!el) return;
             const video = el.querySelector('video-stream').shadowRoot?.querySelector('video') || el.querySelector('video');
-            
-            // iOS Safari tugi
             if (video && !!video.webkitEnterFullscreen && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
                 video.webkitEnterFullscreen(); return;
             }
-            
-            // Standardne täisekraan
             if (!document.fullscreenElement && !document.webkitFullscreenElement) {
                 if (el.requestFullscreen) el.requestFullscreen();
                 else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
@@ -89,6 +84,29 @@
         });
 
         window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (token) {
+                const manifest = {
+                    "short_name": "Eye",
+                    "name": "Eye Live Dashboard",
+                    "start_url": `/?token=${token}`,
+                    "display": "standalone",
+                    "theme_color": "#000000",
+                    "background_color": "#000000",
+                    "icons": [{
+                        "src": "favicon.ico",
+                        "sizes": "64x64 32x32 24x24 16x16",
+                        "type": "image/x-icon"
+                    }]
+                };
+                const stringManifest = JSON.stringify(manifest);
+                const blob = new Blob([stringManifest], {type: 'application/json'});
+                const manifestURL = URL.createObjectURL(blob);
+                document.querySelector('link[rel="manifest"]').setAttribute('href', manifestURL);
+            }
+
             const isHttps = window.location.protocol === 'https:';
             const protocol = isHttps ? 'wss:' : 'ws:';
             const host = window.location.host;
@@ -96,25 +114,19 @@
 
             window.NVR_DATA.forEach((cam, i) => {
                 const box = document.createElement('div');
-                box.className = 'cam-box'; 
-                box.tabIndex = i + 1;
+                box.className = 'cam-box'; box.tabIndex = i + 1;
                 box.innerHTML = `<div class="lbl">${cam.name}</div>`;
-                
                 const s = document.createElement('video-stream');
                 s.setAttribute('playsinline', '');
                 s.mode = "webrtc,mse";
                 s.src = `${wsBase}?src=${encodeURIComponent(cam.id)}`;
-                
                 box.appendChild(s);
                 document.body.appendChild(box);
-                
                 box.onclick = () => {
                     box.focus();
                     toggle(box);
                 };
             });
-            
-            // Fookustame esimese kaamera, et pult kohe töötaks
             if (window.NVR_DATA.length > 0) document.querySelector('.cam-box').focus();
         };
     </script>
